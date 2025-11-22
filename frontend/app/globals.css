@@ -1,13 +1,36 @@
 @import "tailwindcss";
 
 :root {
+  /* Argentine theme colors */
+  --ar-blue: #74ACDF;
+  --ar-white: #FFFFFF;
+  --ar-yellow: #F6B40E;
+  --ar-light-blue: #A8D5F2;
+  --ar-dark-blue: #5A8FB8;
+
+  /* Background and foreground */
   --background: #ffffff;
   --foreground: #171717;
 }
 
 @theme inline {
+  /* Base colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Argentine palette */
+  --color-ar-blue: var(--ar-blue);
+  --color-ar-white: var(--ar-white);
+  --color-ar-yellow: var(--ar-yellow);
+  --color-ar-light-blue: var(--ar-light-blue);
+  --color-ar-dark-blue: var(--ar-dark-blue);
+
+  /* Semantic colors */
+  --color-primary: var(--ar-blue);
+  --color-secondary: var(--ar-yellow);
+  --color-accent: var(--ar-light-blue);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
