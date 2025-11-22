@@ -1,0 +1,14 @@
+{
+  "name": "peso-flat-coin-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "contracts",
+    "docs"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "install:all": "npm install"
+  }
+}
