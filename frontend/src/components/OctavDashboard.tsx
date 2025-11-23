@@ -1,5 +1,5 @@
 import { getPortfolioData } from "@/app/actions";
-import CollateralTreemap from "./CollateralTreemap";
+import CollateralTreemap from "./widgets/CollateralTreemap";
 import { OctavChain, OctavProtocol } from "@/src/types/octav";
 
 interface TreemapData {
