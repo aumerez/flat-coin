@@ -1,6 +1,7 @@
-import { getPortfolioData } from "@/app/actions";
+import { getPortfolioData, getTokenOverview, getTransactions } from "@/app/actions";
 import CollateralTreemap from "./widgets/CollateralTreemap";
-import { OctavChain, OctavProtocol } from "@/src/types/octav";
+import { OctavChain, OctavProtocol, OctavTransactionsResponse } from "@/src/types/octav";
+import TransactionsTable from "./widgets/TransactionsTable";
 
 interface TreemapData {
   name: string;
@@ -13,9 +14,32 @@ export default async function OctavDashboard() {
   const DEFAULT_ADDRESS = "0x70709614bf9ad5bbab18e2244046d48f234a1583";
 
   let rawData;
+  let txs: OctavTransactionsResponse = {
+    transactions: [],
+    address: "",
+    total: 0,
+    limit: 0,
+    offset: 0
+  };
   let error = null;
   try {
     rawData = await getPortfolioData(DEFAULT_ADDRESS);
+    const allTxs = await getTransactions(DEFAULT_ADDRESS, 50); // Fetch more transactions
+
+    // Filter for rebalance-relevant transaction types
+    const rebalanceTypes = ['deposit', 'withdraw', 'mint', 'interaction'];
+    txs = {
+      ...allTxs,
+      transactions: allTxs.transactions.filter(tx =>
+        tx.type && rebalanceTypes.includes(tx.type.toLowerCase())
+      )
+    };
+    
+    if (txs.transactions.length) {
+      console.log('Rebalance transactions:', txs.transactions.length, 'of', allTxs.transactions.length, 'total');
+      console.log('First tx:', txs.transactions[0]);
+    }
+
   } catch (e) {
     error = e instanceof Error ? e.message : "Failed to load portfolio data";
   }
@@ -106,6 +130,15 @@ export default async function OctavDashboard() {
               <CollateralTreemap data={protocolTreemapData} />
             </div>
           ) : null}
+
+          {txs.transactions.length > 0 ? (
+            <div className="bg-white border border-gray-200 rounded-lg p-6 lg:col-span-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Rebalance Log</h3>
+              <TransactionsTable transactions={txs.transactions} />
+            </div>
+          ) : null}
+
+         
         </div>
       </div>
     </section>
