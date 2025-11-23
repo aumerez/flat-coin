@@ -6,28 +6,15 @@
 ---
 
 ## Abstract
+
+$FLATCOIN is a novel stable flatcoin asset designed to preserve purchasing power by anchoring its value to real-world inflation rather than fiat currencies. Unlike conventional stablecoins, which are pegged to nominal values such as 1 USD, $FLATCOIN introduces a dynamic mechanism awhere users can buy and sell tokens directly through a smart contract at a fixed base price of 1 USDT, with built-in interest and taxation structures that mirror inflationary behavior. 
+
+The protocol allows users to open positions via spot purchases or limit orders and to sell positions with interest rewards funded through a programmable tax model. By differentiating between $FLATCOIN and future positions and leveraging mechanisms such as auction-based tax rate discovery and Harberger-style auctions, $FLATCOIN embeds economic signals directly into its token lifecycle. 
+
+The system is designed to create a self-regulating, inflation-indexed monetary instrument whose supply and yield reflect aggregate market expectations. This design is a hedge against inflation, enabling a decentralized and programmable monetary policy.
+
 ---
 
-# Introduction
-
-The global monetary system is increasingly strained by persistent
-inflation and volatility in fiat currencies. While offering a reprieve
-from price fluctuations in cryptocurrencies, traditional stablecoins
-remain tethered to fiat currencies that erode in value over time. As a
-result, stablecoins like USDT or USDC provide *nominal stability* but
-not *absolute stability*; they preserve price but do not provide
-purchasing power.
-
-\$FLATCOIN is introduced as a new class of stable asset---*a
-flatcoin*---designed to maintain value relative to inflation rather than
-a fiat peg. By anchoring its redemption value to 1 USDT *plus an
-interest component* that aims to track inflation, \$FLATCOIN acts as a
-synthetic hedge against the loss of purchasing power. The system
-leverages smart contracts to automate minting, burning, position
-management, and interest calculation, removing intermediaries and
-enabling transparent, rule-based monetary logic.
-
-The core mechanism of \$FLATCOIN revolves around user-managed positions.
 ## Introduction
 
 The global monetary system is increasingly strained by persistent inflation and volatility in fiat currencies. While offering a reprieve from price fluctuations in cryptocurrencies, traditional stablecoins remain tethered to fiat currencies that erode in value over time. As a result, stablecoins like USDT or USDC provide nominal stability but not absolute stability; they preserve price but do not provide purchasing power.
