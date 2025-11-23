@@ -2,6 +2,7 @@ import { getPortfolioData, getTokenOverview, getTransactions } from "@/app/actio
 import CollateralTreemap from "./widgets/CollateralTreemap";
 import { OctavChain, OctavProtocol, OctavTransactionsResponse } from "@/src/types/octav";
 import TransactionsTable from "./widgets/TransactionsTable";
+import TransactionBubbleChart from "./widgets/TransactionBubbleChart";
 
 interface TreemapData {
   name: string;
@@ -87,31 +88,30 @@ export default async function OctavDashboard() {
 
         {portfolioData && (
           <div className="bg-gray-50 rounded-lg p-6 mb-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+              <div className="flex flex-col items-center justify-center text-center">
                 <p className="text-sm text-gray-600">Net Worth</p>
-                <p className="text-2xl font-bold text-accent">
+                <p className="text-2xl font-bold">
                   ${portfolioData.networth ? parseFloat(portfolioData.networth).toLocaleString() : '0'}
                 </p>
               </div>
-              <div>
+              <div className="flex flex-col items-center justify-center text-center">
                 <p className="text-sm text-gray-600">Protocols</p>
-                <p className="text-2xl font-bold text-accent">
+                <p className="text-2xl font-bold">
                   {portfolioData.assetByProtocols ? Object.keys(portfolioData.assetByProtocols).length : 0}
                 </p>
               </div>
-              <div>
+              <div className="flex flex-col items-center justify-center text-center">
                 <p className="text-sm text-gray-600">Chains</p>
-                <p className="text-2xl font-bold text-accent">
+                <p className="text-2xl font-bold">
                   {portfolioData.chains ? Object.keys(portfolioData.chains).length : 0}
                 </p>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Last Updated</p>
-                <p className="text-sm font-medium text-accent">
-                  {portfolioData.lastUpdated ? new Date(parseInt(portfolioData.lastUpdated)).toLocaleString() : 'N/A'}
-                </p>
-              </div>
+            </div>
+            <div className="border-t border-gray-300 pt-3 text-center">
+              <p className="text-xs text-gray-500">
+                Last Updated: {portfolioData.lastUpdated ? new Date(parseInt(portfolioData.lastUpdated)).toLocaleString() : 'N/A'}
+              </p>
             </div>
           </div>
         )}
@@ -119,26 +119,27 @@ export default async function OctavDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {chainTreemapData.length > 0 ? (
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">By Chain</h3>
-              <CollateralTreemap data={chainTreemapData} />
+              <CollateralTreemap data={chainTreemapData} title="By Chain" />
             </div>
           ) : null}
 
           {protocolTreemapData.length > 0 ? (
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">By Protocol</h3>
-              <CollateralTreemap data={protocolTreemapData} />
+              <CollateralTreemap data={protocolTreemapData} title="By Protocol" />
             </div>
           ) : null}
 
           {txs.transactions.length > 0 ? (
             <div className="bg-white border border-gray-200 rounded-lg p-6 lg:col-span-2">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Rebalance Log</h3>
-              <TransactionsTable transactions={txs.transactions} />
+              <TransactionBubbleChart transactions={txs.transactions} title="Last 7 days transaction activity" />
             </div>
           ) : null}
 
-         
+          {txs.transactions.length > 0 ? (
+            <div className="bg-white border border-gray-200 rounded-lg p-6 lg:col-span-2">
+              <TransactionsTable transactions={txs.transactions} title="Rebalance Log" />
+            </div>
+          ) : null}
         </div>
       </div>
     </section>
