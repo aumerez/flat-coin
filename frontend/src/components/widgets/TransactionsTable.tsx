@@ -1,47 +1,154 @@
 "use client";
 
-import { OctavTransaction, OctavChainInfo } from '@/src/types/octav';
-import Image from 'next/image';
+import { TableTransaction, formatTransactionType, getChainInfo } from './types';
+import { WidgetTheme, mergeTheme } from './config';
 import { useState } from 'react';
 
-interface TransactionsTableProps {
-  transactions: OctavTransaction[];
+/**
+ * Props for TransactionsTable component
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <TransactionsTable
+ *   transactions={[
+ *     {
+ *       hash: "0xabc123...",
+ *       timestamp: "1704067200",
+ *       type: "deposit",
+ *       chain: "Ethereum",
+ *       explorerUrl: "https://etherscan.io/tx/0xabc123..."
+ *     }
+ *   ]}
+ * />
+ *
+ * // With custom theme
+ * <TransactionsTable
+ *   transactions={transactions}
+ *   theme={{
+ *     status: {
+ *       success: { bg: "#E8F5E9", text: "#2E7D32" },
+ *       warning: { bg: "#FFEBEE", text: "#C62828" }
+ *     }
+ *   }}
+ * />
+ *
+ * // With custom chain icon renderer
+ * <TransactionsTable
+ *   transactions={transactions}
+ *   renderChainIcon={(chainInfo) => (
+ *     chainInfo.imgSmall ? <img src={chainInfo.imgSmall} alt={chainInfo.name} width={20} height={20} /> : null
+ *   )}
+ * />
+ * ```
+ */
+export interface TransactionsTableProps {
+  /**
+   * Array of transactions to display
+   * Each transaction must have:
+   * - hash: Transaction identifier
+   * - timestamp: Unix timestamp in seconds (string)
+   * - chain: Chain name or ChainInfo object
+   * - type: Optional transaction type
+   * - explorerUrl: Optional link to block explorer
+   */
+  transactions: TableTransaction[];
+
+  /**
+   * Optional title to display above the table
+   */
+  title?: string;
+
+  /**
+   * Optional theme configuration to customize colors
+   * Will be merged with default theme
+   */
+  theme?: Partial<WidgetTheme>;
+
+  /**
+   * Number of items per page (default: 10)
+   */
+  itemsPerPage?: number;
+
+  /**
+   * Custom renderer for chain icons
+   * If not provided, will use basic <img> tag or Next.js Image if available
+   *
+   * @param chainInfo - Chain information object
+   * @returns ReactNode to render the chain icon
+   */
+  renderChainIcon?: (chainInfo: { name: string; imgSmall?: string }) => React.ReactNode;
+
+  /**
+   * Custom empty state message
+   */
+  emptyMessage?: string;
 }
 
-export default function TransactionsTable({ transactions }: TransactionsTableProps) {
+/**
+ * TransactionsTable - Displays transactions in a paginated table
+ *
+ * Shows transaction details including date, action type, chain, and hash
+ * with pagination controls for large datasets.
+ *
+ * **Dependencies:**
+ * - react
+ *
+ * **Standalone Usage:**
+ * This component works in any React project (not just Next.js).
+ * For chain icons, either provide a custom `renderChainIcon` function
+ * or the component will fall back to standard <img> tags.
+ */
+export default function TransactionsTable({
+  transactions,
+  title,
+  theme: customTheme,
+  itemsPerPage = 10,
+  renderChainIcon,
+  emptyMessage = 'No rebalance transactions found',
+}: TransactionsTableProps) {
+  const theme = mergeTheme(customTheme);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   // Calculate pagination
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  // Clamp current page to valid range to prevent out-of-bounds errors
+  const validPage = totalPages > 0 ? Math.min(Math.max(1, currentPage), totalPages) : 1;
+  const startIndex = (validPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentTransactions = transactions.slice(startIndex, endIndex);
 
-  // Helper to get chain info
-  const getChainInfo = (chain: string | OctavChainInfo) => {
-    if (typeof chain === 'string') {
-      return { name: chain, imgSmall: undefined };
-    }
-    return chain;
+  // Default chain icon renderer (fallback to <img> tag)
+  const defaultRenderChainIcon = (chainInfo: { name: string; imgSmall?: string }) => {
+    if (!chainInfo.imgSmall) return null;
+
+    // Use standard img tag for portability
+    // In Next.js projects, users can provide custom renderChainIcon with next/image
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={chainInfo.imgSmall}
+        alt={chainInfo.name}
+        width={20}
+        height={20}
+        style={{ borderRadius: '50%' }}
+      />
+    );
   };
 
-  // Helper to format transaction type for rebalance operations
-  const formatTxType = (type?: string) => {
-    if (!type) return '-';
-    // Convert types like 'send', 'receive', 'swap' to readable format
-    const typeMap: Record<string, string> = {
-      'send': 'Send',
-      'receive': 'Receive',
-      'swap': 'Swap',
-      'deposit': 'Deposit',
-      'withdraw': 'Withdraw',
-      'approve': 'Approval',
-      'transfer': 'Transfer',
-      'interaction': 'Interaction',
-      'mint': 'Mint'
-    };
-    return typeMap[type.toLowerCase()] || type;
+  const iconRenderer = renderChainIcon || defaultRenderChainIcon;
+
+  // Helper to get status badge colors
+  const getStatusColors = (type?: string) => {
+    const lowerType = type?.toLowerCase();
+    if (lowerType === 'receive' || lowerType === 'deposit' || lowerType === 'mint') {
+      return theme.status.success;
+    } else if (lowerType === 'send' || lowerType === 'withdraw') {
+      return theme.status.warning;
+    } else {
+      return theme.status.info;
+    }
   };
 
   const handlePrevPage = () => {
@@ -52,66 +159,118 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
     setCurrentPage(prev => Math.min(totalPages, prev + 1));
   };
 
+  // Styles
+  const tableStyle: React.CSSProperties = {
+    width: '100%',
+    borderCollapse: 'separate',
+    borderSpacing: 0,
+  };
+
+  const headerStyle: React.CSSProperties = {
+    backgroundColor: theme.background.selected,
+    fontSize: '12px',
+    fontWeight: 500,
+    color: theme.text.muted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    padding: '12px 16px',
+    textAlign: 'left',
+  };
+
+  const cellStyle: React.CSSProperties = {
+    padding: '12px 16px',
+    fontSize: '14px',
+    borderTop: `1px solid ${theme.border.light}`,
+  };
+
+  const rowStyle: React.CSSProperties = {
+    backgroundColor: theme.background.base,
+  };
+
+  const rowHoverStyle: React.CSSProperties = {
+    backgroundColor: theme.background.hover,
+  };
+
   return (
-    <div className="w-full">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+    <div style={{ width: '100%' }}>
+      {title && (
+        <h3 style={{
+          fontSize: '20px',
+          fontWeight: 600,
+          color: theme.text.primary,
+          marginBottom: '16px',
+        }}>
+          {title}
+        </h3>
+      )}
+      <div style={{ overflowX: 'auto' }}>
+        <table style={tableStyle}>
+          <thead>
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Action
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Chain
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Hash
-              </th>
+              <th style={headerStyle}>Date</th>
+              <th style={headerStyle}>Action</th>
+              <th style={headerStyle}>Chain</th>
+              <th style={headerStyle}>Hash</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody>
             {currentTransactions.map((tx) => {
               const chainInfo = getChainInfo(tx.chain);
+              const statusColors = getStatusColors(tx.type);
+
               return (
-                <tr key={tx.hash} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                <tr
+                  key={tx.hash}
+                  style={rowStyle}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = rowHoverStyle.backgroundColor!;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = rowStyle.backgroundColor!;
+                  }}
+                >
+                  <td style={{ ...cellStyle, color: theme.text.secondary, whiteSpace: 'nowrap' }}>
                     {new Date(parseInt(tx.timestamp) * 1000).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      tx.type?.toLowerCase() === 'receive' || tx.type?.toLowerCase() === 'deposit' || tx.type?.toLowerCase() === 'mint'
-                        ? 'bg-green-100 text-green-800'
-                        : tx.type?.toLowerCase() === 'send' || tx.type?.toLowerCase() === 'withdraw'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {formatTxType(tx.type)}
+                  <td style={{ ...cellStyle, whiteSpace: 'nowrap' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '2px 10px',
+                        borderRadius: '9999px',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        backgroundColor: statusColors.bg,
+                        color: statusColors.text,
+                      }}
+                    >
+                      {formatTransactionType(tx.type)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm">
-                    <div className="flex items-center gap-2">
-                      {chainInfo.imgSmall && (
-                        <Image
-                          src={chainInfo.imgSmall}
-                          alt={chainInfo.name}
-                          width={20}
-                          height={20}
-                          className="rounded-full"
-                        />
-                      )}
-                      <span className="text-gray-900">{chainInfo.name}</span>
+                  <td style={{ ...cellStyle, whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {iconRenderer(chainInfo)}
+                      <span style={{ color: theme.text.primary }}>{chainInfo.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-mono text-gray-500">
+                  <td style={{ ...cellStyle, fontFamily: 'monospace', color: theme.text.muted, whiteSpace: 'nowrap' }}>
                     {tx.explorerUrl ? (
                       <a
                         href={tx.explorerUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-primary transition-colors"
+                        style={{
+                          color: theme.primary,
+                          textDecoration: 'none',
+                          transition: 'opacity 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.opacity = '0.7';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.opacity = '1';
+                        }}
                         title={tx.hash}
                       >
                         {tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}
@@ -129,55 +288,125 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
         </table>
 
         {transactions.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            No rebalance transactions found
+          <div style={{
+            textAlign: 'center',
+            padding: '32px 0',
+            color: theme.text.muted,
+          }}>
+            {emptyMessage}
           </div>
         )}
       </div>
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-          <div className="flex-1 flex justify-between sm:hidden">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 16px',
+          borderTop: `1px solid ${theme.border.light}`,
+        }}>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between' }} className="sm:hidden">
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '8px 16px',
+                border: `1px solid ${theme.border.base}`,
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: theme.text.secondary,
+                backgroundColor: theme.background.base,
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                opacity: currentPage === 1 ? 0.5 : 1,
+              }}
             >
               Previous
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '8px 16px',
+                border: `1px solid ${theme.border.base}`,
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: theme.text.secondary,
+                backgroundColor: theme.background.base,
+                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                opacity: currentPage === totalPages ? 0.5 : 1,
+                marginLeft: '12px',
+              }}
             >
               Next
             </button>
           </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div style={{ display: 'none', flex: 1, alignItems: 'center', justifyContent: 'space-between' }} className="hidden sm:flex">
             <div>
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
-                <span className="font-medium">{Math.min(endIndex, transactions.length)}</span> of{' '}
-                <span className="font-medium">{transactions.length}</span> transactions
+              <p style={{ fontSize: '14px', color: theme.text.secondary, margin: 0 }}>
+                Showing <span style={{ fontWeight: 500 }}>{startIndex + 1}</span> to{' '}
+                <span style={{ fontWeight: 500 }}>{Math.min(endIndex, transactions.length)}</span> of{' '}
+                <span style={{ fontWeight: 500 }}>{transactions.length}</span> transactions
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+              <nav style={{ display: 'inline-flex', borderRadius: '6px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    border: `1px solid ${theme.border.base}`,
+                    borderRadius: '6px 0 0 6px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    color: theme.text.muted,
+                    backgroundColor: theme.background.base,
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                    opacity: currentPage === 1 ? 0.5 : 1,
+                  }}
                 >
                   Previous
                 </button>
-                <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '8px 16px',
+                  border: `1px solid ${theme.border.base}`,
+                  borderLeft: 'none',
+                  borderRight: 'none',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: theme.text.primary,
+                  backgroundColor: theme.background.base,
+                }}>
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    border: `1px solid ${theme.border.base}`,
+                    borderRadius: '0 6px 6px 0',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    color: theme.text.muted,
+                    backgroundColor: theme.background.base,
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                    opacity: currentPage === totalPages ? 0.5 : 1,
+                  }}
                 >
                   Next
                 </button>
