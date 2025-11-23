@@ -1,6 +1,6 @@
 # Toward a Programmable Inflation Hedge: The $FLATCOIN Model
 
-**Boris Polania** - boris.polania@gmail.com  
+**Francisco Egloff** - fegloff@gmail.com  
 **Armando Umerez** - aumerez@gmail.com
 
 ---
@@ -498,8 +498,3 @@ While not required, the protocol or third-party tools may publish:
 
 These tools should enhance transparency and give users greater insight into how $FLATCOIN responds to macroeconomic trends.
 
----
-
-## Missing Parts
-
-Shall we add a governance section?

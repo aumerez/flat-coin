@@ -61,3 +61,26 @@ h1, h2, h3, h4, h5, h6 {
 .font-open-sans {
   font-family: var(--font-open-sans), system-ui, -apple-system, sans-serif;
 }
+
+/* RainbowKit Modal Customization */
+[data-rk] {
+  --rk-fonts-body: var(--font-open-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* Customize wallet modal */
+[data-rk] button[data-testid="rk-wallet-option"] {
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+[data-rk] button[data-testid="rk-wallet-option"]:hover {
+  border-color: var(--meridian-gold);
+  background-color: #fafafa;
+}
+
+/* Modal header styling */
+[data-rk] [data-testid="rk-connect-header"] {
+  font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  color: var(--meridian-navy);
+}

@@ -1,5 +1,8 @@
+'use client'
+
 import Image from "next/image";
 import Link from "next/link";
+import WalletButton from "./WalletButton";
 
 export default function Header() {
   return (
@@ -38,9 +41,7 @@ export default function Header() {
             <button className="px-6 py-2 bg-meridian-gold text-meridian-navy rounded-lg hover:bg-meridian-gold-dark transition-colors font-montserrat font-semibold">
               Purchase
             </button>
-            <button className="px-6 py-2 border-2 border-meridian-navy text-meridian-navy rounded-lg hover:bg-meridian-light-gray transition-colors font-montserrat font-medium">
-              Connect Wallet
-            </button>
+            <WalletButton />
           </div>
         </div>
       </div>
