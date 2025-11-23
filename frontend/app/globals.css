@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  /* Argentine theme colors */
-  --ar-blue: #74ACDF;
-  --ar-white: #ad7e7e;
-  --ar-yellow: #F6B40E;
-  --ar-light-blue: #A8D5F2;
-  --ar-dark-blue: #5A8FB8;
+  /* MERIDIAN Foundation Brand Colors */
+  --meridian-gold: #FFD700;
+  --meridian-navy: #0A1F44;
+  --meridian-white: #FFFFFF;
+  --meridian-light-gray: #F5F5F5;
+  --meridian-gold-dark: #C5A200;
 
   /* Background and foreground */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0A1F44;
 }
 
 @theme inline {
@@ -18,21 +18,21 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* Argentine palette */
-  --color-ar-blue: var(--ar-blue);
-  --color-ar-white: var(--ar-white);
-  --color-ar-yellow: var(--ar-yellow);
-  --color-ar-light-blue: var(--ar-light-blue);
-  --color-ar-dark-blue: var(--ar-dark-blue);
+  /* MERIDIAN Foundation palette */
+  --color-meridian-gold: var(--meridian-gold);
+  --color-meridian-navy: var(--meridian-navy);
+  --color-meridian-white: var(--meridian-white);
+  --color-meridian-light-gray: var(--meridian-light-gray);
+  --color-meridian-gold-dark: var(--meridian-gold-dark);
 
   /* Semantic colors */
-  --color-primary: var(--ar-blue);
-  --color-secondary: var(--ar-yellow);
-  --color-accent: var(--ar-light-blue);
+  --color-primary: var(--meridian-navy);
+  --color-secondary: var(--meridian-gold);
+  --color-accent: var(--meridian-light-gray);
 
   /* Fonts */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-montserrat);
+  --font-body: var(--font-open-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,5 +45,19 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-open-sans), system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+}
+
+/* Utility classes for MERIDIAN brand */
+.font-montserrat {
+  font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+}
+
+.font-open-sans {
+  font-family: var(--font-open-sans), system-ui, -apple-system, sans-serif;
 }

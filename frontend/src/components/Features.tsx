@@ -21,12 +21,12 @@ export default function Features() {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-accent mb-12 text-center">Features</h2>
+        <h2 className="text-3xl font-bold text-meridian-navy mb-12 text-center font-montserrat">Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <div key={index} className="text-center p-6">
-              <h3 className="text-xl font-semibold text-accent mb-3">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
+            <div key={index} className="text-center p-6 border border-meridian-light-gray rounded-lg hover:border-meridian-gold transition-colors">
+              <h3 className="text-xl font-semibold text-meridian-navy mb-3 font-montserrat">{feature.title}</h3>
+              <p className="text-gray-600 font-open-sans">{feature.description}</p>
             </div>
           ))}
         </div>

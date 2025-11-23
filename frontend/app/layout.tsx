@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/src/components/Header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const openSans = Open_Sans({
+  variable: "--font-open-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Peso Flatcoin - Inflation-Protected Institutional Asset",
-  description: "A cross-chain flatcoin for banks, treasuries, and fintechs with real-time transparency and DeFi-native yield.",
+  title: "MERIDIAN Foundation - Inflation-Protected Institutional Asset",
+  description: "Institutional-grade DeFi products with regulatory compliance. A flatcoin designed for value preservation and global standards.",
 };
 
 export default function RootLayout({
@@ -26,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${montserrat.variable} ${openSans.variable} antialiased`}
       >
         <Header />
         <main>{children}</main>
