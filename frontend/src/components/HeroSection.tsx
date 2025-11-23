@@ -13,9 +13,14 @@ export default function HeroSection() {
             <button className="px-8 py-3 bg-meridian-gold text-meridian-navy rounded-lg hover:bg-meridian-gold-dark transition-colors font-montserrat font-semibold">
               View Demo
             </button>
-            <button className="px-8 py-3 border-2 border-meridian-navy text-meridian-navy rounded-lg hover:bg-meridian-light-gray transition-colors font-montserrat font-medium">
+            <a
+              href="/assets/meridian-whitepaper.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 border-2 border-meridian-navy text-meridian-navy rounded-lg hover:bg-meridian-light-gray transition-colors font-montserrat font-medium inline-block"
+            >
               Read Whitepaper
-            </button>
+            </a>
           </div>
         </div>
       </div>
