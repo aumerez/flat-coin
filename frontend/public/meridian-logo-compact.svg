@@ -1,0 +1,28 @@
+<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- 3D Sphere -->
+  <circle cx="40" cy="40" r="30" fill="url(#sphereGradient)" stroke="#0A1F44" stroke-width="3"/>
+
+  <!-- Gradient for 3D effect -->
+  <defs>
+    <radialGradient id="sphereGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="70%" stop-color="#C5A200"/>
+      <stop offset="100%" stop-color="#0A1F44"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Shield inside sphere -->
+  <path d="M40 25 L32 40 L32 50 L40 58 L48 50 L48 40 Z" fill="#FFFFFF" stroke="#0A1F44" stroke-width="2"/>
+
+  <!-- Meridian lines -->
+  <line x1="10" y1="40" x2="70" y2="40" stroke="#FFFFFF" stroke-width="1.5" opacity="0.6"/>
+  <line x1="40" y1="10" x2="40" y2="70" stroke="#FFFFFF" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Text -->
+  <text x="85" y="45" font-family="Montserrat, sans-serif" font-size="18" font-weight="bold" fill="#0A1F44">
+    MERIDIAN
+  </text>
+  <text x="85" y="60" font-family="Montserrat, sans-serif" font-size="11" fill="#0A1F44">
+    FOUNDATION
+  </text>
+</svg>

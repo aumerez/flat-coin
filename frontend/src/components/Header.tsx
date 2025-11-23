@@ -3,16 +3,16 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="border-b border-gray-200">
+    <header className="border-b border-gray-200 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-8">
             <Link href="/">
               <Image
-                src="/images/banlklLogo.png"
-                alt="Bankl"
-                width={120}
-                height={40}
+                src="/meridian-logo-compact.svg"
+                alt="MERIDIAN Foundation"
+                width={160}
+                height={64}
                 priority
                 className="cursor-pointer"
               />
@@ -21,13 +21,13 @@ export default function Header() {
             <nav className="hidden md:flex items-center gap-6">
               <Link
                 href="/"
-                className="text-gray-700 hover:text-primary transition-colors font-medium"
+                className="text-meridian-navy hover:text-meridian-gold transition-colors font-medium font-montserrat"
               >
                 Home
               </Link>
               <Link
                 href="/collateralization"
-                className="text-gray-700 hover:text-primary transition-colors font-medium"
+                className="text-meridian-navy hover:text-meridian-gold transition-colors font-medium font-montserrat"
               >
                 Collateralization
               </Link>
@@ -35,10 +35,10 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-ar-dark-blue transition-colors">
+            <button className="px-6 py-2 bg-meridian-gold text-meridian-navy rounded-lg hover:bg-meridian-gold-dark transition-colors font-montserrat font-semibold">
               Purchase
             </button>
-            <button className="px-4 py-2 border border-primary text-primary rounded-lg hover:bg-ar-light-blue/10 transition-colors">
+            <button className="px-6 py-2 border-2 border-meridian-navy text-meridian-navy rounded-lg hover:bg-meridian-light-gray transition-colors font-montserrat font-medium">
               Connect Wallet
             </button>
           </div>
